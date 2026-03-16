@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;width:320px;background:#fff;color:#111}
+.hdr{background:#0D1B2A;padding:12px 14px}
+.logo{font-size:14px;font-weight:600;color:#fff;letter-spacing:-0.3px}
+.logo span{color:#E63946}
+.tag{font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px}
+.tabs{display:flex;border-bottom:1px solid #eee;background:#fafafa}
+.t{font-size:12px;padding:8px 10px;cursor:pointer;color:#888;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;flex:1;text-align:center}
+.t.on{color:#111;font-weight:500;border-bottom-color:#E63946;background:#fff}
+.body{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.sw,.lbw{display:flex;gap:5px}
+.sw input,.lbw input{flex:1;padding:7px 10px;font-size:12px;border:1px solid #ddd;border-radius:8px;outline:none;color:#111}
+.sw input:focus{border-color:#E63946}
+.lbw input:focus{border-color:#185FA5}
+.sw button{padding:7px 12px;background:#E63946;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer}
+.sw button:hover{background:#c0303b}
+.lbw button{padding:7px 12px;background:#185FA5;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer}
+.lbw button:hover{background:#0C447C}
+button:disabled{background:#ccc !important;cursor:not-allowed}
+.status{font-size:11px;padding:5px 9px;border-radius:6px;background:#f0f8f0;color:#2D6A4F;display:none;line-height:1.4}
+.status.err{background:#fff0f0;color:#A32D2D}
+.card{border:1px solid #eee;border-radius:10px;overflow:hidden}
+.card-hdr{padding:10px 12px 8px;display:flex;align-items:center;justify-content:space-between}
+.card-name{font-size:13px;font-weight:600}
+.card-meta{font-size:11px;color:#888;margin-top:1px}
+.card-score{font-size:24px;font-weight:700;flex-shrink:0}
+.card-rec{padding:6px 12px;font-size:12px;font-weight:600;text-align:center}
+.card-summary{padding:8px 12px;font-size:11px;color:#555;line-height:1.5;border-top:1px solid #f5f5f5}
+.card-sigs{padding:8px 12px;display:flex;flex-direction:column;gap:5px;border-top:1px solid #f5f5f5}
+.sig{display:flex;align-items:center;gap:6px;font-size:11px}
+.sig-n{width:120px;color:#666;flex-shrink:0}
+.sig-b{flex:1;height:3px;border-radius:2px;background:#eee;position:relative;overflow:hidden}
+.sig-f{height:100%;border-radius:2px;position:absolute;left:0;top:0}
+.sig-v{width:20px;text-align:right;font-size:10px;color:#999;flex-shrink:0}
+.lca-section{border-top:1px solid #E6F1FF;background:#F5FAFF;padding:10px 12px}
+.lca-header{font-size:10px;font-weight:700;color:#185FA5;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.lca-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.lca-stat{font-size:11px}
+.lca-stat span{color:#666;display:block}
+.lca-stat strong{font-size:13px;font-weight:700;color:#111}
+.lca-sub{font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px}
+.lca-pills{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:4px}
+.lca-pill{font-size:10px;padding:2px 7px;background:#E6F1FB;color:#185FA5;border-radius:10px}
+.visa-note{font-size:11px;color:#185FA5;margin-top:6px;padding-top:6px;border-top:1px solid #C8E0F7;line-height:1.4}
+.lca-sources{font-size:10px;color:#aaa;border-top:1px solid #eee;padding-top:7px;margin-top:6px}
+.card-foot{padding:6px 12px;font-size:10px;color:#aaa;text-align:right;border-top:1px solid #f5f5f5}
+.empty{padding:14px;text-align:center;font-size:12px;color:#999;background:#fafafa;border-radius:8px;border:1px dashed #ddd}
+.cfg-input{width:100%;padding:6px 9px;font-size:11px;border:1px solid #ddd;border-radius:6px;outline:none;color:#111}
+.cfg-input:focus{border-color:#E63946}
+.cfg-save{margin-top:6px;padding:7px 12px;background:#0D1B2A;color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;width:100%}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="logo">the <span>offer pulse</span></div>
+  <div class="tag">Hiring intent · H-1B / LCA data · any company</div>
+</div>
+
+<div class="tabs">
+  <button class="t on" data-tab="search" onclick="showTab('search')">Score</button>
+  <button class="t" data-tab="lca" onclick="showTab('lca')">H-1B / LCA</button>
+  <button class="t" data-tab="config" onclick="showTab('config')">Settings</button>
+</div>
+
+<div id="tab-search" class="body">
+  <div class="sw">
+    <input type="text" id="ci" placeholder="Any company name...">
+    <button id="sbtn" onclick="lookup()">Score</button>
+  </div>
+  <div class="status" id="status"></div>
+  <div id="result"></div>
+</div>
+
+<div id="tab-lca" class="body" style="display:none">
+  <div style="font-size:11px;color:#555;line-height:1.5">Check H-1B LCA filings — total certified, avg salary, top roles, and active sponsorship status.</div>
+  <div class="lbw">
+    <input type="text" id="lca-input" placeholder="Company name...">
+    <button id="lca-btn" onclick="lookupLCA()">Look up</button>
+  </div>
+  <div class="status" id="lca-status"></div>
+  <div id="lca-result"></div>
+</div>
+
+<div id="tab-config" class="body" style="display:none">
+  <div style="font-size:11px;color:#555;margin-bottom:4px;font-weight:500">Backend API URL</div>
+  <input class="cfg-input" type="text" id="api-url" placeholder="https://your-app.railway.app">
+  <button class="cfg-save" onclick="saveConfig()">Save & test connection</button>
+  <div class="status" id="cfg-status"></div>
+  <div style="font-size:11px;color:#aaa;line-height:1.6;margin-top:6px">
+    Deploy <code>backend/</code> to Railway, Render, or any Node host.<br>
+    Required env var: <code>ANTHROPIC_API_KEY</code>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
